@@ -1,5 +1,5 @@
 import sys
-from datetime import datetime, timedelta
+from datetime import datetime
 
 import pytest
 from hypothesis import assume, example, given
@@ -7,8 +7,13 @@ from hypothesis import strategies as st
 
 from dateutil import tz
 
-EPOCHALYPSE = datetime.fromtimestamp(2147483647)
-NEGATIVE_EPOCHALYPSE = datetime.fromtimestamp(0) - timedelta(seconds=2147483648)
+# 32-bit time_t range is 1901-12-13 20:45:52 UTC .. 2038-01-19 03:14:07 UTC.
+# fromtimestamp() is local, so a west-of-UTC TZ (CI uses America/New_York)
+# made the naive min_value earlier than that window. Hypothesis then attaches
+# tz.UTC, and dateutil's 32-bit tzfile reader reports LMT while the system
+# zone reports EST (seen on pypy-3.8 / macOS).
+EPOCHALYPSE = datetime(2038, 1, 18)
+NEGATIVE_EPOCHALYPSE = datetime(1901, 12, 14)
 
 
 @pytest.mark.gettz
@@ -25,7 +30,7 @@ NEGATIVE_EPOCHALYPSE = datetime.fromtimestamp(0) - timedelta(seconds=2147483648)
     )
 )
 @example(dt=datetime(2005, 10, 30, 1, 15))  # Ambiguous in US time zones
-@example(dt=datetime(1901, 12, 13, 18, 19, 3))  # Very old
+@example(dt=datetime(1901, 12, 14, 18, 19, 3))  # Very old
 def test_gettz_returns_local(gettz_arg, dt):
     act_tz = tz.gettz(gettz_arg)
     if isinstance(act_tz, tz.tzlocal):

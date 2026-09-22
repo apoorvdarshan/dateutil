@@ -288,6 +288,8 @@ linkcheck_ignore = [
     r"https://metacpan.org/.*",
     # timeanddate.com is now returning 403 for the automated link checker
     r"https://www\.timeanddate.com/.*",
+    # gnu.org is frequently unreachable from GitHub Actions (ENETUNREACH)
+    r"https://www\.gnu\.org/.*",
 ]
 
 # Reduce problems with ephemeral failures
