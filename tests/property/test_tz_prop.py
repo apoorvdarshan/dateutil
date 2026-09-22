@@ -53,8 +53,11 @@ def test_gettz_returns_local(gettz_arg, dt):
     ):
         assert dt_act == dt_exp
     else:
-        assert (
-            tz.enfold(dt, fold=0).astimezone().utcoffset()
-            != tz.enfold(dt, fold=1).astimezone().utcoffset()
-        )
+        # Fold on a UTC-aware source is a no-op (single instant). Only a naive
+        # local input can expose two system offsets for the same wall time.
+        if dt.tzinfo is None:
+            assert (
+                tz.enfold(dt, fold=0).astimezone().utcoffset()
+                != tz.enfold(dt, fold=1).astimezone().utcoffset()
+            )
         assert dt_act != dt_exp

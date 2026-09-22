@@ -3,5 +3,6 @@ expression passed to ``pytest.mark.parametrize`` in ``test_isoparser`` as a
 list; ``PytestRemovedIn10Warning`` combined with ``filterwarnings = error``
 was aborting collection of the whole test session. Also keep
 ``test_gettz_returns_local`` inside the 32-bit ``time_t`` window (local
-``fromtimestamp`` bounds were producing LMT vs EST on pypy-3.8 / macOS)
-and skip the flaky gnu.org link check. Fixed by @apoorvdarshan (gh pr #1531).
+``fromtimestamp`` bounds were producing LMT vs EST on pypy-3.8 / macOS),
+do not require fold on UTC-aware inputs to expose two offsets, and skip
+the flaky gnu.org link check. Fixed by @apoorvdarshan (gh pr #1531).
